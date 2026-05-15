@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlantis Feng Shui & Lu Ban Pro</title>
+    <style>
+        :root {
+            --primary: #0a2342;
+            --accent: #c5a059;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --good: #27ae60;
+            --bad: #e74c3c;
+            --warning: #f39c12;
+        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; padding: 10px; color: #333; }
+        .container { max-width: 1000px; margin: auto; background: var(--white); border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: var(--primary); color: var(--white); padding: 30px 15px; text-align: center; border-bottom: 4px solid var(--accent); }
+        .header h1 { margin: 0; font-size: 22px; text-transform: uppercase; letter-spacing: 1px; }
+        .tabs { display: flex; background: #eee; }
+        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .tab.active { background: var(--white); color: var(--primary); border-top: 3px solid var(--accent); }
+        .content-section { display: none; padding: 25px; }
+        .content-section.active { display: block; }
+        .input-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 25px; }
+        .field { display: flex; flex-direction: column; }
+        input, select { padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-top: 5px; }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card { border: 1px solid #eee; padding: 20px; border-radius: 10px; position: relative; }
+        .card h4 { margin-top: 0; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .remedy { margin-top: 15px; padding: 12px; background: #fffdf0; border: 1px dashed var(--warning); border-radius: 6px; font-size: 13px; }
+        .luban-ruler { overflow-x: auto; background: #333; color: white; padding: 20px; border-radius: 10px; margin-top: 20px; text-align: center; }
+        .ruler-input { font-size: 24px; width: 120px; text-align: center; border: 2px solid var(--accent); background: #222; color: var(--accent); padding: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; border: 1px solid #eee; text-align: left; font-size: 14px; }
+        .status-bad { color: var(--bad); font-weight: bold; }
+        .status-good { color: var(--good); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Atlantis Architecture Pro</h1>
+        <div style="color: var(--accent); font-size: 13px; margin-top: 5px;">Hệ thống Chuyên gia Phong thủy & Thước Lỗ Ban</div>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" onclick="openTab(event, 'tabXayDung')">HẠN XÂY DỰNG</div>
+        <div class="tab" onclick="openTab(event, 'tabBatTrach')">BÁT TRẠCH & THỦY PHÁP</div>
+        <div class="tab" onclick="openTab(event, 'tabLuBan')">THƯỚC LỖ BAN</div>
+    </div>
+
+    <!-- TAB 1: XAY DUNG -->
+    <div id="tabXayDung" class="content-section active">
+        <div class="input-box">
+            <div class="field"><label>Năm sinh</label><input type="number" id="ns1" value="1994" oninput="calcAll()"></div>
+            <div class="field"><label>Năm xây nhà</label><input type="number" id="nx1" value="2026" oninput="calcAll()"></div>
+        </div>
+        <div class="card-grid" id="hanResult"></div>
+    </div>
+
+    <!-- TAB 2: BAT TRACH -->
+    <div id="tabBatTrach" class="content-section">
+        <div class="input-box">
+            <div class="field"><label>Giới tính</label>
+                <select id="gt2" onchange="calcAll()">
+                    <option value="nam">Nam</option>
+                    <option value="nu">Nữ</option>
+                </select>
+            </div>
+        </div>
+        <div id="batTrachResult"></div>
+    </div>
+
+    <!-- TAB 3: LU BAN -->
+    <div id="tabLuBan" class="content-section">
+        <div class="luban-ruler">
+            <label style="color:white">NHẬP KÍCH THƯỚC (mm)</label><br><br>
+            <input type="number" id="lbSize" class="ruler-input" value="810" oninput="calcLuBan()">
+            <div id="lbResult" style="margin-top:20px; font-size:18px;"></div>
+        </div>
+        <div style="margin-top:20px; font-size:13px; color:#666;">
+            * Thước 52.2cm: Dùng cho thông thủy (cửa, cửa sổ).<br>
+            * Thước 42.9cm: Dùng cho khối xây dựng (bếp, bệ, bậc).<br>
+            * Thước 38.8cm: Dùng cho đồ nội thất, âm phần.
+        </div>
+    </div>
+</div>
+
+<script>
+    function openTab(evt, tabName) {
+        var i, content, tabs;
+        content = document.getElementsByClassName("content-section");
+        for (i = 0; i < content.length; i++) content[i].className = content[i].className.replace(" active", "");
+        tabs = document.getElementsByClassName("tab");
+        for (i = 0; i < tabs.length; i++) tabs[i].className = tabs[i].className.replace(" active", "");
+        document.getElementById(tabName).className += " active";
+        evt.currentTarget.className += " active";
+    }
+
+    function calcAll() {
+        const ns = parseInt(document.getElementById('ns1').value);
+        const nx = parseInt(document.getElementById('nx1').value);
+        const gt = document.getElementById('gt2').value;
+        const tuoiMu = nx - ns + 1;
+
+        // KIM LAU
+        const klVal = tuoiMu % 9;
+        const isKL = [1, 3, 6, 8].includes(klVal);
+        const klRemedy = isKL ? "<b>Hóa giải:</b> Mượn tuổi người thân không phạm hạn để động thổ, đứng tên cúng bái." : "Năm tốt, không cần hóa giải.";
+
+        // HOANG OC
+        const hoIdx = (tuoiMu - 10) % 6;
+        const hoArr = ["Nhất Kiết", "Nhị Nghi", "Tam Địa Sát", "Tứ Tấn Tài", "Ngũ Thọ Tử", "Lục Hoang Ốc"];
+        const hoRes = hoArr[hoIdx < 0 ? 0 : hoIdx];
+        const isHO = ["Tam Địa Sát", "Ngũ Thọ Tử", "Lục Hoang Ốc"].includes(hoRes);
+        const hoRemedy = isHO ? "<b>Hóa giải:</b> Khi nhập trạch, nhờ người hợp tuổi bước vào nhà trước hoặc mượn tuổi xây dựng." : "Cung tốt, đại cát.";
+
+        document.getElementById('hanResult').innerHTML = `
+            <div class="card">
+                <h4>Kim Lâu: <span class="${isKL?'status-bad':'status-good'}">${isKL?'Phạm':'Không'}</span></h4>
+                <p>Tuổi mụ: ${tuoiMu}. Dư ${klVal} (Kim Lâu ${isKL?['Thân','Thê','Tử','Súc'][ [1,3,6,8].indexOf(klVal) ] : ''})</p>
+                <div class="remedy">${klRemedy}</div>
+            </div>
+            <div class="card">
+                <h4>Hoang Ốc: <span class="${isHO?'status-bad':'status-good'}">${hoRes}</span></h4>
+                <p>${isHO?'Phạm cung xấu':'Rơi vào cung tốt'}</p>
+                <div class="remedy">${hoRemedy}</div>
+            </div>
+        `;
+
+        // BAT TRACH (GIU NGUYEN LOGIC CU NHUNG THEM PHAN NUOC)
+        let sum = 0; String(ns).split('').forEach(d => sum += parseInt(d));
+        let magic = sum % 9; if(magic === 0) magic = 9;
+        let cV = (gt==='nam') ? (11-magic) : (4+magic);
+        if(cV>9) cV-=9; if(cV<1) cV+=9;
+        const cung = ["Khảm", "Khôn", "Chấn", "Tốn", "Khôn", "Càn", "Đoài", "Cấn", "Ly"][cV-1];
+        
+        document.getElementById('batTrachResult').innerHTML = `
+            <div class="card" style="width:100%; border-top:3px solid var(--accent)">
+                <p>Gia chủ cung <b>${cung}</b>. Ưu tiên bố trí nước tại các cung hung để trấn áp (Tọa Hung) và cửa tại cung cát (Hướng Cát).</p>
+            </div>
+        `;
+    }
+
+    function calcLuBan() {
+        const size = parseFloat(document.getElementById('lbSize').value);
+        if(!size) return;
+        // Logic mo phong don gian cho Thuoc 52.2
+        const cycle = 522;
+        const pos = size % cycle;
+        let res = "";
+        if(pos < 65) res = "<span class='status-good'>Cung Quý Nhân (Tốt)</span>";
+        else if(pos < 130) res = "<span class='status-bad'>Cung Hiểm Họa (Xấu)</span>";
+        else if(pos < 195) res = "<span class='status-bad'>Cung Thiên Tai (Xấu)</span>";
+        else if(pos < 260) res = "<span class='status-good'>Cung Thiên Tài (Tốt)</span>";
+        else if(pos < 325) res = "<span class='status-good'>Cung Phúc Lộc (Tốt)</span>";
+        else if(pos < 390) res = "<span class='status-bad'>Cung Cô Độc (Xấu)</span>";
+        else if(pos < 455) res = "<span class='status-bad'>Cung Thiên Tặc (Xấu)</span>";
+        else res = "<span class='status-good'>Cung Tế Tự (Tốt)</span>";
+        
+        document.getElementById('lbResult').innerHTML = "Kích thước " + size + "mm rơi vào: <br>" + res;
+    }
+
+    window.onload = function() { calcAll(); calcLuBan(); };
+</script>
+</body>
+</html>
